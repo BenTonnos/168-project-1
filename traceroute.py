@@ -126,6 +126,25 @@ def traceroute(sendsock: util.Socket, recvsock: util.Socket, ip: str) \
     """
 
     # TODO Add your implementation
+    result = []
+    finished = False
+    for ttl in range(1, TRACEROUTE_MAX_TTL + 1):
+        routers = []
+        sendsock.set_ttl(ttl)
+        for i in range(PROBE_ATTEMPT_COUNT):
+            sendsock.sendto("potato".encode(), (ip, TRACEROUTE_PORT_NUMBER))
+        for j in range(PROBE_ATTEMPT_COUNT):
+            if recvsock.recv_select():
+                buf, address = recvsock.recvfrom()
+                if address[0] not in routers:
+                    routers.append(address[0])
+                if address[0] == ip:
+                    finished = True
+        result.append(routers)
+        util.print_result(routers, ttl)
+        if finished:
+            break
+    return result
 #    for ttl in range(1, TRACEROUTE_MAX_TTL+1):
 #        util.print_result([], ttl)
 #    return []
