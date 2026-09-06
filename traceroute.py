@@ -93,7 +93,11 @@ class UDP:
     cksum: int
 
     def __init__(self, buffer: bytes):
-        pass  # TODO
+        b = ''.join(format(byte, '08b') for byte in [*buffer])
+        self.src_port = int(b[0:16], 2)
+        self.dst_port = int(b[16:32], 2)
+        self.len = int(b[32:48], 2)
+        self.cksum = int(b[48:64], 2)
 
     def __str__(self) -> str:
         return f"UDP (src_port {self.src_port}, dst_port {self.dst_port}, " + \
