@@ -72,9 +72,9 @@ class ICMP:
 
     def __init__(self, buffer: bytes):
         b = ''.join(format(byte, '08b') for byte in [*buffer])
-        self.type = int(b[160:168], 2)
-        self.code = int(b[168:176], 2)
-        self.cksum = int(b[176:192], 2)
+        self.type = int(b[0:8], 2)
+        self.code = int(b[8:16], 2)
+        self.cksum = int(b[16:32], 2)
 
     def __str__(self) -> str:
         return f"ICMP (type {self.type}, code {self.code}, " + \
