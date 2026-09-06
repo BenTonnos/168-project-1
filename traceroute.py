@@ -38,19 +38,19 @@ class IPv4:
     dst: str
 
     def __init__(self, buffer: bytes):
-        self.version = 4
-        self.header_len = 20
         b = ''.join(format(byte, '08b') for byte in [*buffer])
-        self.tos = int(b[8, 16], 2)
-        self.length = int(b[16, 32], 2)
-        self.id = int(b[32, 48], 2)
-        self.flags = int(b[48, 56], 2)
-        self.frag_offset = int(b[56, 64], 2)
-        self.ttl = int(b[64, 72], 2) 
-        self.proto = int(b[72, 80], 2)
-        self.cksum = int(b[80, 96], 2)
-        self.src = str(int(b[96, 104], 2)) + "." + str(int(b[104, 112], 2)) + "." + str(int(b[112, 120], 2)) + "." + str(int(b[120, 128], 2))
-        self.dst = str(int(b[128, 136], 2)) + "." + str(int(b[136, 144], 2)) + "." + str(int(b[144, 152], 2)) + "." + str(int(b[152, 160]))
+        self.version = int(b[0:4], 2)
+        self.header_len = int(b[4:8], 2) * 4
+        self.tos = int(b[8:16], 2)
+        self.length = int(b[16:32], 2)
+        self.id = int(b[32:48], 2)
+        self.flags = int(b[48:51], 2)
+        self.frag_offset = int(b[51:64], 2)
+        self.ttl = int(b[64:72], 2) 
+        self.proto = int(b[72:80], 2)
+        self.cksum = int(b[80:96], 2)
+        self.src = str(int(b[96:104], 2)) + "." + str(int(b[104:112], 2)) + "." + str(int(b[112:120], 2)) + "." + str(int(b[120:128], 2))
+        self.dst = str(int(b[128:136], 2)) + "." + str(int(b[136:144], 2)) + "." + str(int(b[144:152], 2)) + "." + str(int(b[152:160], 2))
     def __str__(self) -> str:
         return f"IPv{self.version} (tos 0x{self.tos:x}, ttl {self.ttl}, " + \
             f"id {self.id}, flags 0x{self.flags:x}, " + \
