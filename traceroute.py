@@ -139,7 +139,6 @@ def traceroute(sendsock: util.Socket, recvsock: util.Socket, ip: str) \
             if not recvsock.recv_select():
                 break
             buf, address = recvsock.recvfrom()
-            responses += 1
             try:
                 ip_head = IPv4(buf)
                 if len(buf) < ip_head.length or len(buf) < ip_head.header_len:
@@ -160,6 +159,7 @@ def traceroute(sendsock: util.Socket, recvsock: util.Socket, ip: str) \
                 marked_packets.add(original_ip.id)
             except (IndexError, ValueError):
                 continue
+            responses += 1
             if address[0] not in routers:
                 routers.append(address[0])
             if address[0] == ip:
