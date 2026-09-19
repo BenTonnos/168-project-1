@@ -153,9 +153,9 @@ def traceroute(sendsock: util.Socket, recvsock: util.Socket, ip: str) \
                 original_ip = IPv4(buf[original_ip_offset:])
             except (IndexError, ValueError):
                 continue
+            responses += 1
             if address[0] not in routers:
                 routers.append(address[0])
-                responses += 1
             if address[0] == ip:
                 finished = True
         result.append(routers)
