@@ -137,7 +137,7 @@ def traceroute(sendsock: util.Socket, recvsock: util.Socket, ip: str) \
             if recvsock.recv_select():
                 buf, address = recvsock.recvfrom()
                 icmp_head = ICMP(buf)
-                if icmp.type not in [11, 3]:
+                if icmp_head.type not in [11, 3]:
                     continue
                 if address[0] not in routers:
                     routers.append(address[0])
