@@ -128,12 +128,12 @@ def traceroute(sendsock: util.Socket, recvsock: util.Socket, ip: str) \
     # TODO Add your implementation
     result = []
     finished = False
+    marked_packets = set()
     for ttl in range(1, TRACEROUTE_MAX_TTL + 1):
         routers = []
         sendsock.set_ttl(ttl)
         for i in range(PROBE_ATTEMPT_COUNT):
             sendsock.sendto("potato".encode(), (ip, TRACEROUTE_PORT_NUMBER))
-        marked_packets = set()
         for j in range(PROBE_ATTEMPT_COUNT):
             if recvsock.recv_select():
                 buf, address = recvsock.recvfrom()
@@ -150,8 +150,6 @@ def traceroute(sendsock: util.Socket, recvsock: util.Socket, ip: str) \
                         continue
                     original_ip_offset = ip_head.header_len + 8
                     original_ip = IPv4(buf[original_ip_offset:])
-                    if original_ip.ttl != ttl:
-                        continue
                     if original_ip.id in marked_packets:
                         continue
                     marked_packets.add(original_ip.id)
