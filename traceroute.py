@@ -136,13 +136,16 @@ def traceroute(sendsock: util.Socket, recvsock: util.Socket, ip: str) \
         for j in range(PROBE_ATTEMPT_COUNT):
             if recvsock.recv_select():
                 buf, address = recvsock.recvfrom()
-                ip_head = IPv4(buf)
-                if ip_head.proto != 1:
-                    continue
-                icmp_head = ICMP(buf[ip_head.header_len:])
-                if icmp_head.type == 11 and icmp_head.code != 0:
-                    continue
-                if icmp_head.type not in [11, 3]:
+                try:
+                    ip_head = IPv4(buf)
+                    if ip_head.proto != 1:
+                        continue
+                    icmp_head = ICMP(buf[ip_head.header_len:])
+                    if icmp_head.type == 11 and icmp_head.code != 0:
+                        continue
+                    if icmp_head.type not in [11, 3]:
+                        continue
+                except (IndexError, ValueError):
                     continue
                 if address[0] not in routers:
                     routers.append(address[0])
