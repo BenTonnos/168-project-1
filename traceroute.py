@@ -150,10 +150,6 @@ def traceroute(sendsock: util.Socket, recvsock: util.Socket, ip: str) \
                         continue
                     original_ip_offset = ip_head.header_len + 8
                     original_ip = IPv4(buf[original_ip_offset:])
-                    if original_ip.dst != ip:
-                        continue
-                    if original_ip.ttl != ttl:
-                        continue
                     if original_ip.id in marked_packets:
                         continue
                     marked_packets.add(original_ip.id)
