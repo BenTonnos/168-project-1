@@ -133,9 +133,13 @@ def traceroute(sendsock: util.Socket, recvsock: util.Socket, ip: str) \
         sendsock.set_ttl(ttl)
         for i in range(PROBE_ATTEMPT_COUNT):
             sendsock.sendto("potato".encode(), (ip, TRACEROUTE_PORT_NUMBER))
+        marked_packets = set()
         for j in range(PROBE_ATTEMPT_COUNT):
             if recvsock.recv_select():
                 buf, address = recvsock.recvfrom()
+                if buf in marked_packets:
+                    continue
+                marked_packets.add(buf)
                 try:
                     ip_head = IPv4(buf)
                     if len(buf) < ip_head.length or len(buf) < ip_head.header_len:
