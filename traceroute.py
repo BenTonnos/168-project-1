@@ -137,6 +137,8 @@ def traceroute(sendsock: util.Socket, recvsock: util.Socket, ip: str) \
             if recvsock.recv_select():
                 buf, address = recvsock.recvfrom()
                 ip_head = IPv4(buf)
+                if ip_head.proto != 1:
+                    continue
                 icmp_head = ICMP(buf[ip_head.header_len:])
                 if icmp_head.type == 11 and icmp_head.code != 0:
                     continue
