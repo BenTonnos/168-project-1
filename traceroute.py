@@ -128,9 +128,9 @@ def traceroute(sendsock: util.Socket, recvsock: util.Socket, ip: str) \
     # TODO Add your implementation
     result = []
     finished = False
-    marked_packets = set()
     for ttl in range(1, TRACEROUTE_MAX_TTL + 1):
         routers = []
+        marked_packets = set()
         sendsock.set_ttl(ttl)
         for i in range(PROBE_ATTEMPT_COUNT):
             sendsock.sendto("potato".encode(), (ip, TRACEROUTE_PORT_NUMBER))
