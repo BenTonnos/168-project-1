@@ -128,37 +128,35 @@ def traceroute(sendsock: util.Socket, recvsock: util.Socket, ip: str) \
     # TODO Add your implementation
     result = []
     finished = False
-    marked_packets = set()
     for ttl in range(1, TRACEROUTE_MAX_TTL + 1):
         routers = []
         sendsock.set_ttl(ttl)
         for i in range(PROBE_ATTEMPT_COUNT):
             sendsock.sendto("potato".encode(), (ip, TRACEROUTE_PORT_NUMBER))
-        for j in range(PROBE_ATTEMPT_COUNT):
-            if recvsock.recv_select():
-                buf, address = recvsock.recvfrom()
-                try:
-                    ip_head = IPv4(buf)
-                    if len(buf) < ip_head.length or len(buf) < ip_head.header_len:
-                        continue
-                    if ip_head.proto != 1:
-                        continue
-                    icmp_head = ICMP(buf[ip_head.header_len:])
-                    if icmp_head.type == 11 and icmp_head.code != 0:
-                        continue
-                    if icmp_head.type not in [11, 3]:
-                        continue
-                    original_ip_offset = ip_head.header_len + 8
-                    original_ip = IPv4(buf[original_ip_offset:])
-                    if original_ip.id in marked_packets:
-                        continue
-                    marked_packets.add(original_ip.id)
-                except (IndexError, ValueError):
+        responses = 0
+        while responses < PROBE_ATTEMPT_COUNT:
+            if not recvsock.recv_select():
+                break
+            buf, address = recvsock.recvfrom()
+            try:
+                ip_head = IPv4(buf)
+                if len(buf) < ip_head.length or len(buf) < ip_head.header_len:
                     continue
-                if address[0] not in routers:
-                    routers.append(address[0])
-                if address[0] == ip:
-                    finished = True
+                if ip_head.proto != 1:
+                    continue
+                icmp_head = ICMP(buf[ip_head.header_len:])
+                if icmp_head.type == 11 and icmp_head.code != 0:
+                    continue
+                if icmp_head.type not in [11, 3]:
+                    continue
+                original_ip_offset = ip_head.header_len + 8
+                original_ip = IPv4(buf[original_ip_offset:])
+            except (IndexError, ValueError):
+                continue
+            if address[0] not in routers:
+                routers.append(address[0])
+            if address[0] == ip:
+                finished = True
         result.append(routers)
         util.print_result(routers, ttl)
         if finished:
