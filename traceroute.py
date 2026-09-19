@@ -138,6 +138,8 @@ def traceroute(sendsock: util.Socket, recvsock: util.Socket, ip: str) \
                 buf, address = recvsock.recvfrom()
                 ip_head = IPv4(buf)
                 icmp_head = ICMP(buf[ip_head.header_len:])
+                if icmp_head.type == 11 and icmp_head.code != 0:
+                    continue
                 if icmp_head.type not in [11, 3]:
                     continue
                 if address[0] not in routers:
