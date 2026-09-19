@@ -135,7 +135,7 @@ def traceroute(sendsock: util.Socket, recvsock: util.Socket, ip: str) \
         for i in range(PROBE_ATTEMPT_COUNT):
             sendsock.sendto("potato".encode(), (ip, TRACEROUTE_PORT_NUMBER))
         responses = 0
-        while responses < PROBE_ATTEMPT_COUNT:
+        for j in range(PROBE_ATTEMPT_COUNT):
             if not recvsock.recv_select():
                 break
             buf, address = recvsock.recvfrom()
