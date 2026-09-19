@@ -157,8 +157,7 @@ def traceroute(sendsock: util.Socket, recvsock: util.Socket, ip: str) \
                     routers.append(address[0])
                 if address[0] == ip:
                     finished = True
-        if routers not in result:
-            result.append(routers)
+        result.append(routers)
         util.print_result(routers, ttl)
         if finished:
             break
