@@ -128,6 +128,7 @@ def traceroute(sendsock: util.Socket, recvsock: util.Socket, ip: str) \
     # TODO Add your implementation
     result = []
     finished = False
+    marked_packets = set()
     for ttl in range(1, TRACEROUTE_MAX_TTL + 1):
         routers = []
         sendsock.set_ttl(ttl)
@@ -151,6 +152,9 @@ def traceroute(sendsock: util.Socket, recvsock: util.Socket, ip: str) \
                     continue
                 original_ip_offset = ip_head.header_len + 8
                 original_ip = IPv4(buf[original_ip_offset:])
+                if original_ip.id in marked_packets:
+                    continue
+                marked_packets.add(original_ip.id)
             except (IndexError, ValueError):
                 continue
             responses += 1
